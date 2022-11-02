@@ -1,0 +1,106 @@
+---
+- hosts: localhost
+  collections:
+    - oracle.oci
+  vars:
+    # common vars
+    compartment_ocid: "{{ lookup('env', 'compartment_ocid') }}"
+    oci_region: "{{ lookup('env', 'region') }}"
+    mgmt_agent_install_key_name : "test_ansible_key"
+    
+  tasks:
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: ./mgmt_agent_scratch
+        state: directory
+        mode: '0755'
+
+    - name: Create management_agent_install_key
+      oci_management_agent_install_key:
+        # required
+        compartment_id: "{{compartment_ocid}}"
+        display_name:  "{{mgmt_agent_install_key_name}}"
+        # optional
+        #allowed_key_install_count: 56
+        #time_expires: time_expires_example
+        is_unlimited: true
+      register: key_result
+    - debug: 
+        msg="{{key_result.management_agent_install_key}}"
+    - set_fact:
+        management_agent_install_key: "{{key_result.management_agent_install_key.key}}"
+
+    - name: Creating management agent input.rsp file
+      copy:
+        content: "######################################################################## \n
+        # Please refer the following Management Agent Installation Guide for more details. \n
+        # \n
+        # https://docs.cloud.oracle.com/iaas/management-agents/index.html  \n
+        #\n
+        # Since this file has sensitive information, please make sure that after \n
+        # executing setup.sh you either delete this file or store it in a secure \n
+        # location. \n
+        # \n
+        ######################################################################## \n
+        ManagementAgentInstallKey = {{management_agent_install_key}} \n
+        AgentDisplayName = \n
+        #Please uncomment the below tags properties and provide values as needed \n
+        #FreeFormTags = [{\"<key1>\":\"<value1>\"}, {\"<key2>\":\"<value2>\"}]\n
+        #DefinedTags = [{\"namespace1\":{\"<key1>\":\"<value1>\"}}, {\"namespace2\":{\"<key2>\":\"<value2>\"}}]\n
+        ProxyHost = \n
+        ProxyPort = \n
+        ProxyUser = \n
+        ProxyPassword = \n
+        ProxyRealm = \n
+        CredentialWalletPassword = \n
+        #Service.plugin.appmgmt.download=true \n
+        #Service.plugin.jms.download=true \n
+        #Service.plugin.dbaas.download=true \n
+        Service.plugin.logan.download=true
+        #Service.plugin.opsiHost.download=true \n
+        #Service.plugin.jm.download=true" 
+        dest: ./mgmt_agent_scratch/input.rsp
+
+    - name: Download the Management Agent RPM package and copy to scratch locally
+      shell:
+        "wget https://objectstorage.{{oci_region}}.oraclecloud.com/n/idtskf8cjzhp/b/installer/o/Linux-x86_64/latest/oracle.mgmt_agent.rpm"
+      register: pkg_install_result
+    
+    - name: Copying the Management Agent Script locally to scratch
+      copy:
+        src: "{{ item }}"
+        dest: ./mgmt_agent_scratch
+      with_items:
+        - mgmt_agent_install.sh
+        - oracle.mgmt_agent.rpm
+      
+- hosts: ocls_hosts
+  tasks:
+    - name: Transfer all mgmt agent files over to the hosts
+      become: yes
+      become_user: root
+      copy:
+        src: ./mgmt_agent_scratch
+        dest: /tmp/
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Running the Management Agent install script
+      become: yes
+      become_user: root
+      shell: 
+        "sudo chmod 755 /tmp/mgmt_agent_scratch/mgmt_agent_install.sh && /tmp/mgmt_agent_scratch/mgmt_agent_install.sh"
+      register: agent_install_output
+    - debug: 
+        msg="{{agent_install_output.stdout_lines}}"
+    
+    - name: Set varlog folder permissions
+      become: yes
+      become_user: root
+      shell: 
+        "/usr/bin/setfacl -R -m u:mgmt_agent:rX /var/log"
+
+    
+
+      
