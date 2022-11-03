@@ -1,15 +1,25 @@
 ---
-  - name: Install mgmt agent
+  - name: UnInstall mgmt agent
     hosts: ocls_hosts  
     tasks:
+    - name: Uninstalling the Management Agent Script
+      become: yes
+      become_user: opc
+      shell: 
+        "sudo /opt/oracle/mgmt_agent/agent_inst/bin/uninstaller.sh "
+      register: uninstall_result_script
+      tags: uninstall-script
+
     - name: Uninstalling the Management Agent
       become: yes
-      become_user: root
+      become_user: opc
       shell: 
-        "rpm -evh oracle.mgmt_agent && /opt/oracle/mgmt_agent/agent_inst/bin/uninstaller.sh"
-      register: uninstall_result
+        "sudo rpm -evh oracle.mgmt_agent"
+      register: uninstall_result_package
+      tags: uninstall-package
+        
 
     - debug: 
-        msg="{{uninstall_result.stdout_lines}}"
+        msg="{{uninstall_result_script.stdout_lines}}  {{uninstall_result_package}}"
 
    

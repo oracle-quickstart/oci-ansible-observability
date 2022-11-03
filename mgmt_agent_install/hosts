@@ -1,10 +1,18 @@
 # hosts file
 
 [ocls_hosts]	
-152.67.xx.xx
+152.67.102.xx
 
 [ocls_hosts:vars]
 ansible_user=opc
 ansible_ssh_private_key_file=/Users/vsnaik/.ssh/id_rsa
+
+[all:vars]
+mgmt_agent_install_key_name=test_ansible_key
+mgmt_agent_sratch=/tmp/mgmt_agent_scratch
+compartment_ocid="{{ lookup('env', 'compartment_ocid') }}"
+oci_region="{{ lookup('env', 'region') }}"
+
+    
 
 
