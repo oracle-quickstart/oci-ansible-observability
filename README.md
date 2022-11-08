@@ -8,7 +8,10 @@ It will have a mix of shell scripts, usage of ansible scripts and other built in
 Clone this repository and run the playbooks
 
 ```
-$ cd <sample-directory> ex: $ cd mgmt_agent_install
+$ cd <sample-directory> 
+
+ex: $ cd mgmt_agent_install
+
 $ ansible-playbook -i hosts mgmt_agent_install.yaml
 ```
 
