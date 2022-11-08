@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  collections:
+    - oracle.oci
+  vars:
+    #common Variables
+    compartment_ocid: "{{ lookup('env', 'compartment_ocid') }}"
+    
+    # Setup Logging Variables
+    log_group_display_name: "test_vcn_log_group"
+    log_display_name: "test_vcn_logs"
+    vcn_display_name: "oke-vcn-quick-demo-oke-cde893a33"
+    network_compartment_ocid: "{{ lookup('env', 'network_compartment_ocid') }}"
+    subnet_name: "oke-svclbsubnet-quick-demo-oke-cde893a33-regional"
+    setup_vcn_flow_logs: "true"
+
+  tasks:
+    - name: Setting Up VCN Flow Logs
+      import_tasks: setup_vcn_flow_logs.yaml
+      when: setup_vcn_flow_logs == "true"
+
+    
+     

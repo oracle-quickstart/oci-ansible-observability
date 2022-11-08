@@ -1,0 +1,18 @@
+# hosts file
+
+[ocls_hosts]	
+192.9.168.151
+
+[ocls_hosts:vars]
+ansible_user=opc
+ansible_ssh_private_key_file=/Users/vsnaik/.ssh/id_rsa
+
+[all:vars]
+mgmt_gateway_install_key_name=test_gateway_ansible_key
+mgmt_gateway_sratch=/tmp/mgmt_gateway_scratch
+compartment_ocid="{{ lookup('env', 'compartment_ocid') }}"
+oci_region="{{ lookup('env', 'region') }}"
+
+    
+
+

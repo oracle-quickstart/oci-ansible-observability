@@ -1,0 +1,84 @@
+---
+- name: Check pre-requisites
+  fail:
+    msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
+  when: item not in ansible_env
+  with_items:
+    - "compartment_ocid"
+    - "network_compartment_ocid"
+
+- name: Create log_group
+  oci_logging_log_group:
+    # required
+    compartment_id: "{{ compartment_ocid }}"
+    display_name: "{{log_group_display_name}}"
+
+    # optional
+    description: "Log Group for {{log_group_display_name}}"
+    #defined_tags: {'Operations': {'CostCenter': 'US'}}
+    #freeform_tags: {'Department': 'Finance'}
+  register: log_group_result
+- debug:
+    msg: "{{log_group_result}}.log_group"
+- set_fact:
+    log_group_id: "{{log_group_result}}.log_group.id"
+
+- name: List vcns
+  oci_network_vcn_facts:
+    # required
+    compartment_id: "{{ compartment_ocid }}"
+    # optional
+    display_name: "{{vcn_display_name}}"
+  register: vcn_list_result
+- debug:
+    msg: "{{vcn_list_result}}"
+- set_fact:
+    vcn_id: "{{vcn_list_result.vcns[0].id}}"
+
+- name: List subnets
+  oci_network_subnet_facts:
+    # required
+    compartment_id: "{{ compartment_ocid }}"
+
+    # optional
+    vcn_id: "{{vcn_id}}"
+    #display_name: display_name_example
+    #sort_by: TIMECREATED
+    #sort_order: ASC
+    #lifecycle_state: PROVISIONING
+  tags: list_subnet
+  register: subnet_list_result
+- set_fact:
+    subnet_id: "{{ item.id }}"
+  with_items: "{{subnet_list_result.subnets}}"
+  when: item.display_name == "{{subnet_name}}"
+- debug:
+    msg: "{{subnet_id}}"
+
+- name: Create Service Log
+  oci_logging_log:
+    # required
+    log_type: SERVICE
+    display_name: "{{log_display_name}}"
+    log_group_id: "{{log_group_result.log_group.id}}"
+
+    # optional
+    is_enabled: true
+    #defined_tags: {'Operations': {'CostCenter': 'US'}}
+    #freeform_tags: {'Department': 'Finance'}
+    retention_duration: 180
+    configuration:
+      # required
+      source:
+        # required
+        source_type: OCISERVICE
+        service: flowlogs
+        resource: "{{subnet_id}}"
+        category: all
+        # optional
+        parameters: null
+        # optional
+      compartment_id: "{{ network_compartment_ocid }}"
+      archiving:
+        # optional
+        is_enabled: true
