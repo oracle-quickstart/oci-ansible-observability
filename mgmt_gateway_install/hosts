@@ -1,7 +1,7 @@
 # hosts file
 
 [ocls_hosts]	
-192.9.168.151
+192.9.168.xxx
 
 [ocls_hosts:vars]
 ansible_user=opc
