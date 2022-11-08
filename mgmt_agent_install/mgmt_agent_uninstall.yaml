@@ -17,8 +17,6 @@
         "sudo rpm -evh oracle.mgmt_agent"
       register: uninstall_result_package
       tags: uninstall-package
-        
-
     - debug: 
         msg="{{uninstall_result_script.stdout_lines}}  {{uninstall_result_package}}"
 
