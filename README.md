@@ -1,8 +1,7 @@
 # Ansible playbooks for oci observability and management
 
 This repository will contain all the ansible related automation for oci observability & management services.
-It will have a mix of shell scripts, usage of ansible scripts and other built in ansible modules to perform the task.
- 
+
 # How to run
 
 Clone this repository and run the playbooks
