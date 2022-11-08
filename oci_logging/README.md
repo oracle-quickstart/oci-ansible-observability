@@ -40,6 +40,6 @@ export region=ap-sydney-1
 ```
 # How to run:
 ```
-ansible-playbook -i hosts main.yaml
+ansible-playbook main.yaml
 ```
 
