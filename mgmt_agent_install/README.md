@@ -3,7 +3,7 @@
 In this ansible example we will perform the below tasks:
 
 ```
-playbook: mgmt_agent_install.yaml
+playbook: mgmt_agent_install/mgmt_agent_install.yaml
 
   play #1 (localhost): localhost        TAGS: []
     tasks:
