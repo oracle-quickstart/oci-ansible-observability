@@ -4,7 +4,7 @@ This repository will contain all the ansible related automation for oci observab
 
 # How to run
 
-Clone this repository and run the playbooks
+Clone this repository and run the playbooks as shown below:
 
 ```
 $ cd <sample-directory> 
@@ -14,7 +14,7 @@ ex: $ cd mgmt_agent_install
 $ ansible-playbook -i hosts mgmt_agent_install.yaml
 ```
 
-**Note: Do set all the variables inside the hosts file before proceeding.
+**Note: Do set all the variables inside the hosts file before proceeding. All the examples have their own README, Please refer them before proceeding.
 
 ## Contributing
 
