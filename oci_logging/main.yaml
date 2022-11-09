@@ -1,7 +1,7 @@
----
 # Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 # 
+---
 - hosts: localhost
   collections:
     - oracle.oci
@@ -12,6 +12,8 @@
     # Setup Logging Variables
     log_group_display_name: "test_vcn_log_group"
     log_display_name: "test_vcn_logs"
+    # Provide existing VCN Name, Subnet name and network compartment OCID
+    # for this enabling VCN Flow logs on this subnet.
     vcn_display_name: "oke-vcn-quick-demo-oke-cde893a33"
     network_compartment_ocid: "{{ lookup('env', 'network_compartment_ocid') }}"
     subnet_name: "oke-svclbsubnet-quick-demo-oke-cde893a33-regional"
