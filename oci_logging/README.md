@@ -32,6 +32,8 @@ key_file=<key_file_path>
 export compartment_ocid=ocid1.compartment.oc1..aaaaaaaa 
 export network_compartment_ocid=ocid1.compartment.oc1..aaaaaaaa
 ```
+Check the vars section of main.yaml and set the variables accordingly.
+
 # How to run:
 ```
 ansible-playbook main.yaml
