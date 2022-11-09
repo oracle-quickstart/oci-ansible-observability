@@ -5,18 +5,13 @@ In this ansible example we will perform the below tasks:
 ```
 playbook: setup_vcn_flow_logs.yaml
 
-  play #1 (localhost): localhost        TAGS: []
+  play #1 (localhost): localhost        
     tasks:
-      Check pre-requisites      TAGS: []
-      Create log_group  TAGS: []
-      debug     TAGS: []
-      List vcns TAGS: []
-      debug     TAGS: []
-      set_fact  TAGS: []
+      Check pre-requisites      
+      Create log_group  
+      List vcns 
       List subnets      TAGS: [list_subnet]
-      set_fact  TAGS: []
-      debug     TAGS: []
-      Create Service Log        TAGS: []
+      Create Service Log        
 ``` 
 ## Pre Requisites
 You need to have OCI CLI installed and OCI config created in your development environment refer https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm#Quickstart
@@ -36,7 +31,6 @@ key_file=<key_file_path>
 ```
 export compartment_ocid=ocid1.compartment.oc1..aaaaaaaa 
 export network_compartment_ocid=ocid1.compartment.oc1..aaaaaaaa
-export region=ap-sydney-1
 ```
 # How to run:
 ```
