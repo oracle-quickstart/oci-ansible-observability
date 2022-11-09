@@ -1,3 +1,7 @@
+# Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# 
+
 # hosts file
 
 [ocls_hosts]	
@@ -11,7 +15,7 @@ ansible_ssh_private_key_file=/Users/vsnaik/.ssh/id_rsa
 mgmt_agent_install_key_name=test_ansible_key
 mgmt_agent_sratch=/tmp/mgmt_agent_scratch
 compartment_ocid="{{ lookup('env', 'compartment_ocid') }}"
-oci_region="{{ lookup('env', 'region') }}"
+
 
     
 
