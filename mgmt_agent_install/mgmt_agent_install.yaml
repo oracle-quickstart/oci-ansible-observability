@@ -3,6 +3,13 @@
   collections:
     - oracle.oci
   tasks:
+    - name: Check pre-requisites
+      fail:
+        msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
+      when: item not in ansible_env
+      with_items:
+        - "compartment_ocid"
+
     - name: Create a directory if it does not exist
       ansible.builtin.file:
         path: ./mgmt_agent_scratch
@@ -55,22 +62,32 @@
         #Service.plugin.jm.download=true" 
         dest: ./mgmt_agent_scratch/input.rsp
 
-    - name: Download the Management Agent RPM package and copy to scratch locally
-      shell:
-        "wget https://objectstorage.{{oci_region}}.oraclecloud.com/n/idtskf8cjzhp/b/installer/o/Linux-x86_64/latest/oracle.mgmt_agent.rpm"
-      register: pkg_install_result
-    
-    - name: Copy the Management Agent Script locally to scratch
-      copy:
-        src: "{{ item }}"
-        dest: ./mgmt_agent_scratch
-      with_items:
-        - oracle.mgmt_agent.rpm
+    - name: List management agent images
+      oci_management_agent_image_facts:
+        compartment_id: "{{compartment_ocid}}"
+        install_type: AGENT
+      register: image_result
+    - set_fact:
+        object_url: "{{ item.object_url | split('/')}}"
+        namespace: "{{[4]|map('extract', item.object_url.split('/')) | join()}}"
+        bucket_name: "{{[6]|map('extract', item.object_url.split('/')) | join ()}}"
+        object_name: "{{[8,9,10]|map('extract', item.object_url.split('/')) | join('/')}}"
 
-    - name: Locally remove oracle.mgmt_agent.rpm
-      file:
-        path: oracle.mgmt_agent.rpm
-        state: absent
+      with_items: "{{image_result.management_agent_images}}"
+      when:
+        - item.platform_name == "Linux-x86_64"
+        - item.package_type == "RPM"
+    - debug:
+        msg: "Extracted the agent image details as follows Namespace: {{namespace}} Bucket: {{bucket_name}} Object name: {{object_name}}"
+  
+    - name: Download Agent RPM object
+      oci_object_storage_object:
+        # required
+        namespace_name: "{{namespace}}"
+        bucket_name: "{{bucket_name}}"
+        object_name: "{{object_name}}"
+        dest: ./mgmt_agent_scratch/oracle.mgmt_agent.rpm
+      tags: download_agent
    
 - hosts: ocls_hosts 
   vars:
