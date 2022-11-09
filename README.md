@@ -1,6 +1,11 @@
-# Ansible playbooks for oci observability and management
+# Ansible playbooks for OCI (Oracle Cloud Infrastructure) observability and management
 
 This repository will contain all the ansible related automation for oci observability & management services.
+
+# Pre Requisites
+
+Follow the Oracle OCI (Oracle Cloud Infrastructure) ansible getting started guide and complete all the pre requisites
+https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/ansiblegetstarted.htm
 
 # How to run
 
