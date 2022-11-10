@@ -5,30 +5,26 @@ In this ansible example we will perform the below tasks:
 ```
 playbook: mgmt_agent_install.yaml
 
-  play #1 (localhost): localhost        TAGS: []
+  play #1 (localhost): localhost        
     tasks:
-      Create a directory if it does not exist   TAGS: []
-      Create management_agent_install_key       TAGS: []
-      debug     TAGS: []
-      set_fact  TAGS: []
-      Creating management agent input.rsp file  TAGS: []
-      Download the Management Agent RPM package and copy to scratch locally     TAGS: []
-      Copy the Management Agent Script locally to scratch       TAGS: []
-      Locally remove oracle.mgmt_agent.rpm      TAGS: []
+      Create a directory if it does not exist   
+      Create management_agent_install_key       
+      Creating management agent input.rsp file  
+      Download the Management Agent RPM package and copy to scratch locally    
+      Copy the Management Agent Script locally to scratch       
+      Locally remove oracle.mgmt_agent.rpm    
 
-  play #2 (ocls_hosts): ocls_hosts      TAGS: []
+  play #2 (ocls_hosts): ocls_hosts     
     tasks:
-      check java executable is present on remote host   TAGS: [check-java-exists]
-      debug     TAGS: []
-      Checking Java version     TAGS: []
-      debug     TAGS: []
-      Check if Java Version is greater than 1.8 TAGS: []
-      Transfer all mgmt agent files over to the hosts   TAGS: []
+      check java executable is present on remote host   TAGS: [check-java-exists] 
+      Checking Java version    
+      Check if Java Version is greater than 1.8 
+      Transfer all mgmt agent files over to the hosts  
       Install the mgmt agent rpm        TAGS: [install-agent]
       Setting up mgmt agent service     TAGS: [setup-agent]
       Start mgmt agent service  TAGS: [start-agent]
-      Cleanup management agent scratch  TAGS: []
-      Set varlog folder permissions     TAGS: []
+      Cleanup management agent scratch  
+      Set varlog folder permissions   
 ```
 
 ## Pre Requisites
