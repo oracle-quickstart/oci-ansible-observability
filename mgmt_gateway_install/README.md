@@ -2,6 +2,7 @@
 
 In this ansible example we will perform the below tasks:
 
+```
 playbook: mgmt_agent_install.yaml
 
   play #1 (localhost): localhost        TAGS: []
@@ -28,7 +29,8 @@ playbook: mgmt_agent_install.yaml
       Start mgmt agent service  TAGS: [start-agent]
       Cleanup management agent scratch  TAGS: []
       Set varlog folder permissions     TAGS: []
-      
+```
+
 ## Pre Requisites
 You need to have OCI CLI installed and OCI config created in your development environment refer https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm#Quickstart
 
