@@ -46,6 +46,6 @@ export compartment_ocid=ocid1.compartment.oc1..aaaaaaaa
 ```
 # How to run:
 ```
-ansible-playbook -i hosts mgmt_agent_install.yaml
+ansible-playbook -i hosts mgmt_gateway_install.yaml
 ```
 
