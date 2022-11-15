@@ -19,7 +19,7 @@ ex: $ cd mgmt_agent_install
 $ ansible-playbook -i hosts mgmt_agent_install.yaml
 ```
 
-<b>Note: Do set all the variables inside the hosts file before proceeding. All the examples have their own README, Please refer them before proceeding.</b>
+<b>Note:</b> Set all the variables before proceeding. All the examples have their own README, Please refer them before proceeding.
 
 ## Contributing
 
