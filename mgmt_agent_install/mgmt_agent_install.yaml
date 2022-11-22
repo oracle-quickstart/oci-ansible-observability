@@ -57,11 +57,11 @@
         ProxyPassword = \n
         ProxyRealm = \n
         CredentialWalletPassword = \n
-        #Service.plugin.appmgmt.download=true \n
+        Service.plugin.appmgmt.download=true \n
         #Service.plugin.jms.download=true \n
-        #Service.plugin.dbaas.download=true \n
+        Service.plugin.dbaas.download=true \n
         Service.plugin.logan.download=true
-        #Service.plugin.opsiHost.download=true \n
+        Service.plugin.opsiHost.download=true \n
         #Service.plugin.jm.download=true" 
         dest: ./mgmt_agent_scratch/input.rsp
 
@@ -102,17 +102,17 @@
       command: 
         "which java"
       register: java_result
-      tags: check-java-exists
+      tags: check_java_exists
     - debug: 
         msg="{{java_result.stdout_lines}}"
-        verbosity=1
+     
 
     - name: Check Java version
       shell: "java -version 2>&1 | awk -F '\"' '/version/ {print $2}' | head -c3"
       register: java_version
     - debug: 
         msg="{{java_version.stdout_lines[0]}}"
-        verbosity=1
+        
 
     - name: Check if Java Version is greater than 1.8
       fail:
@@ -132,23 +132,27 @@
     - name: Install the management agent
       become: yes
       become_user: root
-      yum:
-        name: "{{mgmt_agent_sratch}}/oracle.mgmt_agent.rpm"
-        state: present
-      tags: install-agent
+      shell: "rpm -ivh {{mgmt_agent_sratch}}/oracle.mgmt_agent.rpm"
+      register: install_agent_result
+      tags: install_agent
+    - debug: 
+        msg="{{install_agent_result}}"
 
     - name: Set up management agent service
       become: yes
       become_user: opc
       shell: 
         "sudo /opt/oracle/mgmt_agent/agent_inst/bin/setup.sh opts={{mgmt_agent_sratch}}/input.rsp"
-      tags: setup-agent
+      tags: setup_agent
+      register: setup_agent_result
+    - debug: 
+        msg="{{setup_agent_result}}"
     
     - name: Start management agent service
       ansible.builtin.service:
         name: mgmt_agent.service
         state: started
-      tags: start-agent
+      tags: start_agent
     
     - name: Cleanup management agent scratch
       become: yes
@@ -156,6 +160,7 @@
       file:
         path: "{{mgmt_agent_sratch}}"
         state: absent
+      tags: cleanup_agent
 
     - name: Set varlog folder permissions
       become: yes

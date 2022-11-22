@@ -3,7 +3,7 @@
 # 
 ---
   - name: UnInstall mgmt agent
-    hosts: ocls_hosts  
+    hosts: agent_hosts  
     tasks:
     - name: Uninstalling the Management Agent Script
       become: yes
