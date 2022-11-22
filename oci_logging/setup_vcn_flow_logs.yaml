@@ -18,8 +18,6 @@
 
     # optional
     description: "Log Group for {{log_group_display_name}}"
-    #defined_tags: {'Operations': {'CostCenter': 'US'}}
-    #freeform_tags: {'Department': 'Finance'}
   register: log_group_result
 - debug:
     msg: "{{log_group_result}}.log_group"
@@ -42,13 +40,8 @@
   oci_network_subnet_facts:
     # required
     compartment_id: "{{ compartment_ocid }}"
-
     # optional
     vcn_id: "{{vcn_id}}"
-    #display_name: display_name_example
-    #sort_by: TIMECREATED
-    #sort_order: ASC
-    #lifecycle_state: PROVISIONING
   tags: list_subnet
   register: subnet_list_result
 - set_fact:
@@ -67,8 +60,6 @@
 
     # optional
     is_enabled: true
-    #defined_tags: {'Operations': {'CostCenter': 'US'}}
-    #freeform_tags: {'Department': 'Finance'}
     retention_duration: 180
     configuration:
       # required
