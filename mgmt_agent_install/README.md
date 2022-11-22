@@ -15,12 +15,12 @@ playbook: mgmt_agent_install/mgmt_agent_install.yaml
 
   play #2 (agent_hosts): agent_hosts     
     tasks:
-      Check java program exists on remote host   TAGS: [check-java-exists]   
+      Check java program exists on remote host      
       Check if Java Version is greater than 1.8 
       Transfer all management agent files over to the hosts   
-      Install the management agent               TAGS: [install-agent]
-      Set up management agent service            TAGS: [setup-agent]
-      Start management agent service             TAGS: [start-agent]
+      Install the management agent              
+      Set up management agent service          
+      Start management agent service             
       Cleanup management agent scratch  
       Set varlog folder permissions    
 ``` 
