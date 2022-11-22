@@ -8,22 +8,19 @@ playbook: mgmt_agent_install/mgmt_agent_install.yaml
 
   play #1 (localhost): localhost     
     tasks:
-      Create a directory if it does not exist  
-      Create management_agent_install_key     
-      Creating management agent input.rsp file  
-      Download the Management Agent RPM package and copy to scratch locally  
-      Copy the Management Agent Script locally to scratch   
-      Locally remove oracle.mgmt_agent.rpm    
+      Create a local scratch folder  
+      Create management agent install key     
+      Create management agent response file 
+      Download Management Agent 
 
-  play #2 (ocls_hosts): ocls_hosts     
+  play #2 (agent_hosts): agent_hosts     
     tasks:
-      check java executable is present on remote host   TAGS: [check-java-exists] 
-      Checking Java version    
+      Check java program exists on remote host   TAGS: [check-java-exists]   
       Check if Java Version is greater than 1.8 
-      Transfer all mgmt agent files over to the hosts   
-      Install the mgmt agent rpm        TAGS: [install-agent]
-      Setting up mgmt agent service     TAGS: [setup-agent]
-      Start mgmt agent service  TAGS: [start-agent]
+      Transfer all management agent files over to the hosts   
+      Install the management agent               TAGS: [install-agent]
+      Set up management agent service            TAGS: [setup-agent]
+      Start management agent service             TAGS: [start-agent]
       Cleanup management agent scratch  
       Set varlog folder permissions    
 ``` 

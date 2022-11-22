@@ -13,13 +13,13 @@
       with_items:
         - "compartment_ocid"
 
-    - name: Create a directory if it does not exist
+    - name: Create a local scratch folder
       ansible.builtin.file:
         path: ./mgmt_agent_scratch
         state: directory
         mode: '0755'
 
-    - name: Create management_agent_install_key
+    - name: Create management agent install key
       oci_management_agent_install_key:
         # required
         compartment_id: "{{compartment_ocid}}"
@@ -34,7 +34,7 @@
     - set_fact:
         management_agent_install_key: "{{key_result.management_agent_install_key.key}}"
 
-    - name: Creating management agent input.rsp file
+    - name: Create management agent response file
       copy:
         content: "######################################################################## \n
         # Please refer the following Management Agent Installation Guide for more details. \n
@@ -83,7 +83,7 @@
     - debug:
         msg: "Extracted the agent image details as follows Namespace: {{namespace}} Bucket: {{bucket_name}} Object name: {{object_name}}"
   
-    - name: Download Agent RPM object
+    - name: Download Management Agent 
       oci_object_storage_object:
         # required
         namespace_name: "{{namespace}}"
@@ -92,11 +92,11 @@
         dest: ./mgmt_agent_scratch/oracle.mgmt_agent.rpm
       tags: download_agent
    
-- hosts: ocls_hosts 
+- hosts: agent_hosts 
   vars:
     # common vars
   tasks:
-    - name: check java executable is present on remote host
+    - name: Check java program exists on remote host
       become: yes
       become_user: root
       command: 
@@ -107,7 +107,7 @@
         msg="{{java_result.stdout_lines}}"
         verbosity=1
 
-    - name: Checking Java version
+    - name: Check Java version
       shell: "java -version 2>&1 | awk -F '\"' '/version/ {print $2}' | head -c3"
       register: java_version
     - debug: 
@@ -119,7 +119,7 @@
         msg: "Java version is less than 1.8, Exiting.."
       when: java_version.stdout_lines[0]|float < 1.8 
     
-    - name: Transfer all mgmt agent files over to the hosts
+    - name: Transfer all management agent files over to the hosts
       become: yes
       become_user: root
       copy:
@@ -129,7 +129,7 @@
         group: opc
         mode: '0644'
 
-    - name: Install the mgmt agent rpm
+    - name: Install the management agent
       become: yes
       become_user: root
       yum:
@@ -137,14 +137,14 @@
         state: present
       tags: install-agent
 
-    - name: Setting up mgmt agent service
+    - name: Set up management agent service
       become: yes
       become_user: opc
       shell: 
         "sudo /opt/oracle/mgmt_agent/agent_inst/bin/setup.sh opts={{mgmt_agent_sratch}}/input.rsp"
       tags: setup-agent
     
-    - name: Start mgmt agent service
+    - name: Start management agent service
       ansible.builtin.service:
         name: mgmt_agent.service
         state: started
