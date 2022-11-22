@@ -4,10 +4,10 @@
 
 # hosts file
 
-[ocls_hosts]	
+[gateway_hosts]	
 192.9.168.xxx
 
-[ocls_hosts:vars]
+[gateway_hosts:vars]
 ansible_user=opc
 ansible_ssh_private_key_file=/Users/vsnaik/.ssh/id_rsa
 

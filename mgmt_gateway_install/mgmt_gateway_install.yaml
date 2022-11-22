@@ -6,13 +6,13 @@
   collections:
     - oracle.oci
   tasks:
-    - name: Create a directory if it does not exist
+    - name: Create a local scratch folder
       ansible.builtin.file:
         path: ./mgmt_gateway_scratch
         state: directory
         mode: '0755'
 
-    - name: Create management_gateway_install_key
+    - name: Create management gateway install key
       oci_management_agent_install_key:
         # required
         compartment_id: "{{compartment_ocid}}"
@@ -27,7 +27,7 @@
     - set_fact:
         management_gateway_install_key: "{{key_result.management_agent_install_key.key}}"
 
-    - name: Creating management gateway input.rsp file
+    - name: Create management gateway response file
       copy:
         content: "######################################################################## \n
         # Please refer the following Management gateway Installation Guide for more details. \n
@@ -55,7 +55,7 @@
         CredentialWalletPassword = \n "
         dest: ./mgmt_gateway_scratch/input.rsp
     
-    - name: List management agent images
+    - name: List management gateway images
       oci_management_agent_image_facts:
         compartment_id: "{{compartment_ocid}}"
         install_type: GATEWAY
@@ -73,7 +73,7 @@
     - debug:
         msg: "Extracted the agent image details as follows Namespace: {{namespace}} Bucket: {{bucket_name}} Object name: {{object_name}}"
   
-    - name: Download Agent RPM object
+    - name: Download Management Gateway Package
       oci_object_storage_object:
         # required
         namespace_name: "{{namespace}}"
@@ -82,12 +82,11 @@
         dest: ./mgmt_gateway_scratch/oracle.mgmt_gateway.rpm
       tags: download_agent
   
-   
-- hosts: ocls_hosts 
+- hosts: gateway_hosts 
   vars:
     # common vars
   tasks:
-    - name: check java executable is present on remote host
+    - name: Check java program exists on remote host
       become: yes
       become_user: root
       command: 
@@ -110,7 +109,7 @@
         msg: "Java version is less than 1.8, Exiting.."
       when: java_version.stdout_lines[0]|float < 1.8 
     
-    - name: Transfer all mgmt gateway files over to the hosts
+    - name: Transfer all management gateway files over to the hosts
       become: yes
       become_user: root
       copy:
@@ -120,7 +119,7 @@
         group: opc
         mode: '0644'
 
-    - name: Install the mgmt gateway rpm
+    - name: Install the management gateway
       become: yes
       become_user: root
       yum:
@@ -128,7 +127,7 @@
         state: present
       tags: install-gateway
 
-    - name: Setting up mgmt gateway service
+    - name: Set up management gateway service
       become: yes
       become_user: mgmt_agent
       shell: 
@@ -138,7 +137,7 @@
         msg : "{{gw-result}}"
       tags: setup-gateway
     
-    - name: Start mgmt gateway service
+    - name: Start management gateway service
       ansible.builtin.service:
         name: mgmt_gateway
         state: started
