@@ -1,6 +1,6 @@
 # Ansible playbooks for OCI (Oracle Cloud Infrastructure) observability and management
 
-This repository will contain all the ansible related automation for OCI Observability & Management Services.
+This repository will contain all the automation for OCI Observability & Management Services using ansible.
 
 # Pre Requisites
 
@@ -19,7 +19,7 @@ ex: $ cd mgmt_agent_install
 $ ansible-playbook -i hosts mgmt_agent_install.yaml
 ```
 
-<b>Note:</b> Set all the variables before proceeding. All the examples have their own README, Please refer them before proceeding.
+<b>Note:</b> Set all the variables before proceeding. All the examples have their own README, Please refer to them before proceeding.
 
 ## Contributing
 
