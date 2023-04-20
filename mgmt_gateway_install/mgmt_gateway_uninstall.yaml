@@ -1,0 +1,24 @@
+# Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# 
+---
+  - name: UnInstall mgmt gateway
+    hosts: gateway_hosts  
+    tasks:
+    - name: Uninstalling the Management Agent Script
+      become: yes
+      become_user: "{{user_with_sudo}}"
+      shell: 
+        "sudo /opt/oracle/mgmt_agent/agent_inst/bin/uninstaller.sh "
+      register: uninstall_result_script
+      tags: uninstall_script
+
+    - name: Uninstalling the Management gateway
+      become: yes
+      become_user: "{{user_with_sudo}}"
+      shell: 
+        "sudo rpm -evh oracle.mgmt_gateway"
+      register: uninstall_result_package
+      tags: uninstall_package
+    - debug: 
+        msg="{{uninstall_result_script.stdout_lines}}  {{uninstall_result_package}}"

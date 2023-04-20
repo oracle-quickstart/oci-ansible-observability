@@ -1,0 +1,95 @@
+# Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# 
+---
+- hosts: localhost
+  collections:
+    - oracle.oci
+  vars:
+    tenancy_ocid: "{{ lookup('env', 'tenancy_ocid') }}"
+    compartment_ocid: "{{ lookup('env', 'compartment_ocid') }}"  
+    cred_dynamic_group_name: "credential_gateway_dyn_group"
+    mgmt_gw_dynamic_group_name: "mgmt_gateway_dyn_group"
+    iam_policy_name: "test_gateway_policy"
+    cred_dynamic_rule: "ANY { ALL {resource.type = 'certificateauthority', resource.compartment.id = '{{compartment_ocid}}' }}"
+    mgmt_dynamic_rule: "ANY {ALL {resource.type='managementagent', resource.compartment.id = '{{compartment_ocid}}' } }"
+    
+  tasks:
+    - name: Check pre-requisites
+      fail:
+        msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
+      when: item not in ansible_env
+      with_items:
+        - "compartment_ocid"
+        - "tenancy_ocid"
+
+    - name: Create Credential dynamic group
+      oci_identity_dynamic_group:
+        # required
+        compartment_id: "{{tenancy_ocid}}"
+        name: "{{cred_dynamic_group_name}}"
+        description: Identity & Management Credential Dynamic Group for Management Gateway
+        matching_rule: "{{cred_dynamic_rule}}"
+      register: cred_result
+    - debug:
+        msg: "{{cred_result}}"
+
+    - name: Create Management Gateway dynamic group
+      oci_identity_dynamic_group:
+        # required
+        compartment_id: "{{tenancy_ocid}}"
+        name: "{{mgmt_gw_dynamic_group_name}}"
+        description: Identity & Management Dynamic Group for Management Gateway
+        matching_rule: "{{mgmt_dynamic_rule}}"
+      register: mgmt_gw__result
+    - debug:
+        msg: "{{mgmt_gw__result}}"
+
+    - name: Create Identity & Management Policy
+      oci_identity_policy:
+        # required
+        compartment_id: "{{tenancy_ocid}}"
+        name: "{{iam_policy_name}}"
+        description: Identity & Management Policies for Management Gateway
+        statements: ["Allow DYNAMIC-GROUP {{cred_dynamic_group_name}} to USE certificate-authority-delegates in compartment id {{compartment_ocid}}",
+                "Allow DYNAMIC-GROUP {{cred_dynamic_group_name}} to USE vaults in compartment id {{compartment_ocid}}",
+                "Allow DYNAMIC-GROUP {{cred_dynamic_group_name}} to USE keys in compartment id {{compartment_ocid}}",
+                "Allow DYNAMIC-GROUP {{mgmt_gw_dynamic_group_name}} to READ certificate-authority-bundle in compartment id {{compartment_ocid}}",
+                "Allow DYNAMIC-GROUP {{mgmt_gw_dynamic_group_name}} to READ leaf-certificate-bundle in compartment id {{compartment_ocid}}",
+                "Allow DYNAMIC-GROUP {{mgmt_gw_dynamic_group_name}} to MANAGE certificate-authorities in compartment id {{compartment_ocid}} where any{request.permission='CERTIFICATE_AUTHORITY_CREATE', request.permission='CERTIFICATE_AUTHORITY_INSPECT', request.permission='CERTIFICATE_AUTHORITY_READ'}",
+                "Allow DYNAMIC-GROUP {{mgmt_gw_dynamic_group_name}} to MANAGE leaf-certificates in compartment id {{compartment_ocid}} where  any{request.permission='CERTIFICATE_CREATE', request.permission='CERTIFICATE_INSPECT', request.permission ='CERTIFICATE_UPDATE', request.permission='CERTIFICATE_READ'}",
+                "Allow DYNAMIC-GROUP {{mgmt_gw_dynamic_group_name}} to MANAGE vaults in compartment id {{compartment_ocid}} where any{request.permission='VAULT_CREATE', request.permission='VAULT_INSPECT', request.permission='VAULT_READ', request.permission='VAULT_CREATE_KEY', request.permission='VAULT_IMPORT_KEY', request.permission='VAULT_CREATE_SECRET'}", 
+                "Allow DYNAMIC-GROUP {{mgmt_gw_dynamic_group_name}} to MANAGE keys in compartment id {{compartment_ocid}} where any{request.permission='KEY_CREATE', request.permission='KEY_INSPECT', request.permission='KEY_READ'}",
+                "Allow DYNAMIC-GROUP {{mgmt_gw_dynamic_group_name}} to USE certificate-authority-delegates in compartment id {{compartment_ocid}}",
+                "Allow DYNAMIC-GROUP {{mgmt_gw_dynamic_group_name}} to USE key-delegate in compartment id {{compartment_ocid}}" ]
+      register: policy_result
+      tags: setup_policy
+    - debug:
+        msg: "{{policy_result}}"
+
+- hosts: gateway_hosts 
+  vars:
+    # common vars
+  tasks:
+    - name: Check java program exists on remote host
+      become: yes
+      become_user: root
+      command: 
+        "which java"
+      register: java_result
+      tags: check-java-exists
+    - debug: 
+        msg="{{java_result.stdout_lines}}"
+        verbosity=1
+
+    - name: Checking Java version
+      shell: "java -version 2>&1 | awk -F '\"' '/version/ {print $2}' | head -c3"
+      register: java_version
+    - debug: 
+        msg="{{java_version.stdout_lines[0]}}"
+        verbosity=1
+
+    - name: Check if Java Version is greater than 1.8
+      fail:
+        msg: "Java version is less than 1.8, Exiting.."
+      when: java_version.stdout_lines[0]|float < 1.8 
