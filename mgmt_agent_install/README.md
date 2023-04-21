@@ -1,54 +1,46 @@
-# Overview
+# Management Agent Install Overview
 
 In this ansible example we will perform the below tasks:
 
+## Pre-requisite tasks:
 
-```
-playbook: mgmt_agent_install/mgmt_agent_install.yaml
+- Create Management Agent dynamic group
+- Create Identity & Management Policy
+- Check Java Versions
 
-  play #1 (localhost): localhost     
-    tasks:
-      Create a local scratch folder  
-      Create management agent install key     
-      Create management agent response file 
-      Download Management Agent 
+## Agent Install tasks:
+- Create management agent install key
+- Create management agent response file
+- Download Management Agent image
+- Install the management agent
+- Set up management agent service
+- Start management agent service
+- Set varlog folder permissions
 
-  play #2 (agent_hosts): agent_hosts     
-    tasks:
-      Check java program exists on remote host      
-      Check if Java Version is greater than 1.8 
-      Transfer all management agent files over to the hosts   
-      Install the management agent              
-      Set up management agent service          
-      Start management agent service             
-      Cleanup management agent scratch  
-      Set varlog folder permissions    
-``` 
 ## Pre Requisites
-You need to have OCI CLI installed and OCI config created in your development environment refer https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm#Quickstart
 
-```
-$ cat ~/.oci/config
-[DEFAULT]
-user=ocid1.user.oc1..aaaaaaaay
-fingerprint=06:2f:27:74:34:
-tenancy=ocid1.tenancy.oc1..aaaaaaaa
-region=ap-sydney-1
-key_file=<key_file_path>
-```
+Before deploying Management Agents in your hosts, ensure that the following prerequisites are met
 
-To start using Ansible with OCI, ensure that you meet the prerequisites, then install the Ansible collection using yum or manually.
-Follow the documentation here:
-https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/ansiblegetstarted.htm#Getting_Started_with_Oracle_Cloud_Infrastructure_and_Ansible
+https://docs.oracle.com/en-us/iaas/management-agents/doc/perform-prerequisites-deploying-management-agents.html#OCIAG-GUID-BC5862F0-3E68-4096-B18E-C4462BC76271
 
-Both Ansible and our Ansible collection also come preinstalled and preauthenticated on Cloud Shell.
+Both Ansible and OCI Ansible collections comes preinstalled and preauthenticated on Cloud Shell. The below commands are tested using cloud shell. If you are using
 
 ## Set the Environment variables:
 
 ```
 export compartment_ocid=ocid1.compartment.oc1..aaaaaaaa 
+export tenancy_ocid=ocid1.tenancy.oc1..aaaaaaaa 
 ```
 # How to run:
+
+Run the Pre-requisites first:
+
+```
+ansible-playbook -i hosts mgmt_agent_pre_reqs.yaml
+```
+Note: You can ignore the pre-requisites if you have manually created dynamic groups and policies.
+
+Install the agent:
 ```
 ansible-playbook -i hosts mgmt_agent_install.yaml
 ```

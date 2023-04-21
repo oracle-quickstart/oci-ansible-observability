@@ -5,7 +5,7 @@
 # hosts file
 
 [agent_hosts]	
-152.67.102.xx
+#152.67.102.xx
 
 [agent_hosts:vars]
 ansible_user=opc
@@ -15,6 +15,8 @@ ansible_ssh_private_key_file=/Users/vsnaik/.ssh/id_rsa
 mgmt_agent_install_key_name=test_ansible_key
 mgmt_agent_sratch=/tmp/mgmt_agent_scratch
 compartment_ocid="{{ lookup('env', 'compartment_ocid') }}"
+user_with_sudo=opc
+
 
 
     
