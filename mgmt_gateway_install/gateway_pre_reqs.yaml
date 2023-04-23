@@ -10,7 +10,7 @@
     compartment_ocid: "{{ lookup('env', 'compartment_ocid') }}"  
     cred_dynamic_group_name: "credential_gateway_dyn_group"
     mgmt_gw_dynamic_group_name: "mgmt_gateway_dyn_group"
-    iam_policy_name: "test_gateway_policy"
+    iam_policy_name: "gateway_policy"
     cred_dynamic_rule: "ANY { ALL {resource.type = 'certificateauthority', resource.compartment.id = '{{compartment_ocid}}' }}"
     mgmt_dynamic_rule: "ANY {ALL {resource.type='managementagent', resource.compartment.id = '{{compartment_ocid}}' } }"
     
@@ -41,9 +41,9 @@
         name: "{{mgmt_gw_dynamic_group_name}}"
         description: Identity & Management Dynamic Group for Management Gateway
         matching_rule: "{{mgmt_dynamic_rule}}"
-      register: mgmt_gw__result
+      register: mgmt_gw_result
     - debug:
-        msg: "{{mgmt_gw__result}}"
+        msg: "{{mgmt_gw_result}}"
 
     - name: Create Identity & Management Policy
       oci_identity_policy:
