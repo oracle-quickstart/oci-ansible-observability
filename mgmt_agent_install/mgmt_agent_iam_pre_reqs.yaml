@@ -1,0 +1,51 @@
+# Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# 
+---
+- hosts: localhost
+  tags: agent_iam_pre_reqs
+  collections:
+    - oracle.oci
+  vars:
+    tenancy_ocid: "{{ lookup('env', 'tenancy_ocid') }}"
+    compartment_ocid: "{{ lookup('env', 'compartment_ocid') }}"  
+    dynamic_group_name: "mgmt_agent_dyn_group"
+    iam_policy_name: "mgmt_agent_policy"
+    dynamic_rule: "ANY {ALL {resource.type='managementagent', resource.compartment.id = '{{compartment_ocid}}' } }"
+    
+  tasks:
+    - name: Check pre-requisites
+      fail:
+        msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
+      when: item not in ansible_env
+      with_items:
+        - "compartment_ocid"
+        - "tenancy_ocid"
+
+    - name: Create Management Agent dynamic group
+      oci_identity_dynamic_group:
+        # required
+        compartment_id: "{{tenancy_ocid}}"
+        name: "{{dynamic_group_name}}"
+        description: Identity & Management Dynamic Group for Management Agent
+        matching_rule: "{{dynamic_rule}}"
+      register: mgmt_agent_result
+    - debug:
+        msg: "{{mgmt_agent_result}}"
+
+    - name: Create Identity & Management Policy
+      oci_identity_policy:
+        # required
+        compartment_id: "{{tenancy_ocid}}"
+        name: "{{iam_policy_name}}"
+        description: Identity & Management Policies for Management Agent
+        statements: ["allow dynamic-group {{dynamic_group_name}} to MANAGE management-agents in compartment id {{compartment_ocid}}",
+                     "allow dynamic-group {{dynamic_group_name}} to USE METRICS in compartment id {{compartment_ocid}}",
+                     "allow dynamic-group {{dynamic_group_name}} to {LOG_ANALYTICS_LOG_GROUP_UPLOAD_LOGS} in compartment id {{compartment_ocid}}",
+                     "allow dynamic-group {{dynamic_group_name}} to USE loganalytics-collection-warning in compartment id {{compartment_ocid}}" 
+                     ]
+      register: policy_result
+      tags: setup_policy
+    - debug:
+        msg: "{{policy_result}}"
+

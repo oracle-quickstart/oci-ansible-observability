@@ -36,7 +36,11 @@ export tenancy_ocid=ocid1.tenancy.oc1..aaaaaaaa
 Run the Pre-requisites first:
 
 ```
-ansible-playbook -i hosts mgmt_agent_pre_reqs.yaml
+ansible-playbook -i hosts mgmt_agent_pre_checks.yaml
+```
+
+```
+ansible-playbook -i hosts mgmt_agent_iam_pre_reqs.yaml
 ```
 Note: You can ignore the pre-requisites if you have manually created dynamic groups and policies.
 
