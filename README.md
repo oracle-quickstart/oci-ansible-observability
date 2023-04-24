@@ -1,25 +1,25 @@
-# Ansible playbooks for OCI (Oracle Cloud Infrastructure) observability and management
+# Ansible playbooks for Oracle Cloud Infrastructure Observability and Management
 
-This repository will contain all the automation for OCI Observability & Management Services using ansible.
+This repository will contain automation for OCI Observability & Management Services using ansible.
 
-# Pre Requisites
+## Ansible Setup
 
-Follow the Oracle OCI (Oracle Cloud Infrastructure) ansible getting started guide and complete all the pre requisites
-https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/ansiblegetstarted.htm
+Follow the Oracle OCI (Oracle Cloud Infrastructure) ansible getting started guide to [setup](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/ansiblegetstarted.htm) ansible with OCI collections on your workstation.
 
-# How to run
+Both Ansible and OCI Ansible collection come preinstalled and preauthenticated on Cloud Shell. You can ignore setup if you are using Cloud Shell.
 
-Clone this repository and run the playbooks as shown below:
+## The following services are automated
 
-```
-$ cd <sample-directory> 
+- [Management Gateway Install](./mgmt_gateway_install/README.md) <br>
+- [Management Agent Install](./mgmt_agent_install/README.md)
 
-ex: $ cd mgmt_agent_install
+## Details: Management Gateway
 
-$ ansible-playbook -i hosts mgmt_agent_install.yaml
-```
+The Management Gateway provides a single point of communication between the Management Agents (or any other customer-side products) and the Oracle Cloud Infrastructure.
 
-<b>Note:</b> Set all the variables before proceeding. All the examples have their own README, Please refer to them before proceeding.
+<img src="https://docs.oracle.com/en-us/iaas/management-agents/doc/img/gateway_concepts_diagram.png" width="300" height="300">
+
+Read Oracle [docs](https://docs.oracle.com/en-us/iaas/management-agents/doc/management-gateway.html) for more information.
 
 ## Contributing
 
