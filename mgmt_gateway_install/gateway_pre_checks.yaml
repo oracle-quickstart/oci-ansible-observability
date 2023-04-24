@@ -1,0 +1,78 @@
+# Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+# Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
+# 
+---
+- name: List region_subscriptions
+  hosts: localhost
+  tags: list_regions
+  collections:
+    - oracle.oci
+  tasks:
+    - name: List
+      oci_identity_region_subscription_facts:
+        tenancy_id: "{{ lookup('env', 'tenancy_ocid') }}"
+      register: result
+    - set_fact:
+        region: "{{ item.region_name }}"
+      with_items: "{{result.region_subscriptions}}"
+      when: 
+        - item.is_home_region == True
+    - debug:
+        msg: "Home Region Name: {{region}}"
+
+- name: General Gateway Checks
+  hosts: gateway_hosts 
+  tags: general_gateway_checks
+  tasks:
+    - name: Check java program exists on remote host
+      shell: "which java"
+      register: java_result
+    - debug: 
+        msg: "{{ java_result.stdout_lines }}"
+    
+    - name: Checking Java version full
+      shell: "java -version 2>&1 | awk -F '\"' '/version/ {print $2}'"
+      register: result
+    - set_fact:
+        version: "{{[0]|map('extract',result.stdout.split('_'))}}"
+        build: "{{[1]|map('extract',result.stdout.split('_'))}}"
+    - debug:
+        msg: "Java Output: {{result.stdout}} Version: {{version}} Build: {{build}}"
+
+    - name: Checking Java version
+      shell: "java -version 2>&1 | awk -F '\"' '/version/ {print $2}' | head -c3"
+      register: java_version
+  
+    - name: Check if Java Version is greater than 1.8
+      fail:
+        msg: "Java version is less than 1.8, Exiting.."
+      when: (java_version.stdout|float < 1.8) and (build[0]|int < 281)
+    
+    - name: Check if the host can reach OCI O&M Endpoints
+      wait_for: host={{item}} port=443 timeout=5
+      with_items:
+        - "management-agent.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "dbmgmt.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "stack-monitoring.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "ingestion.logging.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "logging.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "notification.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "operationsinsights.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "apm-trace.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "apm-cp.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "dashboard.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "vaults.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "secrets.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "apm-synthetic.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "telemetry-ingestion.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "managementdashboard.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "apm-config.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "objectstorage.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "opensearch.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "kms.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "certificatesmanagement.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "certificates.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "auth.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "usageapi.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "iaas.{{ hostvars.localhost.region }}.oci.oraclecloud.com"
+        - "identity.{{ hostvars.localhost.region }}.oci.oraclecloud.com"

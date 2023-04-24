@@ -1,8 +1,8 @@
 # Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
 # Licensed under the Universal Permissive License v 1.0 as shown at http://oss.oracle.com/licenses/upl.
 # 
----
 - hosts: localhost
+  tags: gateway_iam_pre_reqs
   collections:
     - oracle.oci
   vars:
@@ -15,6 +15,7 @@
     mgmt_dynamic_rule: "ANY {ALL {resource.type='managementagent', resource.compartment.id = '{{compartment_ocid}}' } }"
     
   tasks:
+
     - name: Check pre-requisites
       fail:
         msg: "Environment variable {{item}} not set. Please declare an environment variable with an appropriate value for the sample to work."
@@ -66,30 +67,3 @@
       tags: setup_policy
     - debug:
         msg: "{{policy_result}}"
-
-- hosts: gateway_hosts 
-  vars:
-    # common vars
-  tasks:
-    - name: Check java program exists on remote host
-      become: yes
-      become_user: root
-      command: 
-        "which java"
-      register: java_result
-      tags: check-java-exists
-    - debug: 
-        msg="{{java_result.stdout_lines}}"
-        verbosity=1
-
-    - name: Checking Java version
-      shell: "java -version 2>&1 | awk -F '\"' '/version/ {print $2}' | head -c3"
-      register: java_version
-    - debug: 
-        msg="{{java_version.stdout_lines[0]}}"
-        verbosity=1
-
-    - name: Check if Java Version is greater than 1.8
-      fail:
-        msg: "Java version is less than 1.8, Exiting.."
-      when: java_version.stdout_lines[0]|float < 1.8 

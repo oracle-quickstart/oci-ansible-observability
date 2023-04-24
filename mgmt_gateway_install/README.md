@@ -49,9 +49,14 @@ export ANSIBLE_HOST_KEY_CHECKING=False
 Run the Pre-requisites first:
 
 ```
-ansible-playbook -i hosts gateway_pre_reqs.yaml
+ansible-playbook -i hosts gateway_pre_checks.yaml 
 ```
-Note: You can ignore the pre-requisites if you have manually created dynamic groups and policies.
+Note: You will need to fix all the issues that might arise out of those checks.
+
+```
+ansible-playbook -i hosts gateway_iam_pre_reqs.yaml 
+```
+Note: You can ignore the IAM pre-requisites if you have manually created dynamic groups and policies.
 
 Install the agent:
 ```
@@ -63,6 +68,3 @@ ansible-playbook -i hosts mgmt_gateway_install.yaml
 ```
 ansible-playbook -i hosts mgmt_gateway_uninstall.yaml
 ```
-
-# Testing
-The above steps have been tested using OCI cloud shell. 
