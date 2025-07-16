@@ -23,15 +23,18 @@ Read Oracle [docs](https://docs.oracle.com/en-us/iaas/management-agents/doc/mana
 
 ## Contributing
 
-This project welcomes contributions from the community. Before submitting a pull
-request, see [CONTRIBUTING](./CONTRIBUTING.md) for details.
+This project welcomes contributions from the community. Before submitting a pull request, see [CONTRIBUTING](./CONTRIBUTING.md) for details.
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process
 
 ## License
 
 Copyright (c) 2021, 2022 Oracle and/or its affiliates.
+
 Released under the Universal Permissive License (UPL), Version 1.0.
 See [LICENSE](./LICENSE) for more details.
 
 [oci]: https://cloud.oracle.com/en_US/cloud-infrastructure
 [oci ansible]: https://github.com/oracle/oci-ansible-collection
-
